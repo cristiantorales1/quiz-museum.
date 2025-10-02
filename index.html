@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Establece la codificación y vista responsiva -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz - Museum of the Mind</title>
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9fb;
+      color: #222658;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+    }
+    header {
+      width: 100%;
+      background-color: #eceaea;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .logo {
+      height: 70px;
+      object-fit: contain;
+      cursor: default;
+      user-select: none;
+    }
+    .quiz-container {
+      background: #ffffff;
+      max-width: 440px;
+      width: 90%;
+      margin: 30px 0;
+      padding: 25px 20px;
+      border-radius: 22px;
+      box-shadow: 0 8px 22px rgba(36, 37, 105, 0.15);
+      text-align: center;
+    }
+    .quiz-container h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+    }
+    .question {
+      font-size: 1.25rem;
+      margin: 20px 0 25px;
+      font-weight: 600;
+    }
+    .options button {
+      width: 100%;
+      max-width: 320px;
+      background-color: #e9e7f6;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 10px auto;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      display: block;
+      color: #07080f;
+    }
+    .options button:hover {
+      background-color: #4969d4;
+    }
+    .correct {
+      background-color: #01d140 !important;
+      color: white !important;
+    }
+    .wrong {
+      background-color: #e85252 !important;
+      color: white !important;
+    }
+    #result {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2e2258;
+      margin-top: 30px;
+    }
+    #retry-btn {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      background-color: #504de8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+    }
+    #retry-btn:hover {
+      background-color: #3557c7;
+    }
+    #back-btn {
+      margin-top: 10px;
+      padding: 10px 25px;
+      font-size: 1rem;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none; /* Oculto en la primera pregunta */
+    }
+    #back-btn:hover {
+      background-color: #565e64;
+    }
+    #qrcode {
+      margin: 40px auto 10px auto;
+      width: 120px;
+      height: 120px;
+    }
+    .qr-text {
+      font-size: 0.9rem;
+      color: #0c0a16;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    @media (max-width: 480px) {
+      .quiz-container {
+        max-width: 340px;
+        padding: 20px 15px;
+        border-radius: 18px;
+      }
+      header {
+        padding: 15px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Logo Museum" class="logo" />
+</header>
+
+<div class="quiz-container">
+  <h1>Quiz - Museum of the Mind</h1>
+  <div id="quiz"></div>
+  <!-- Botón para regresar a la pregunta anterior -->
+  <button id="back-btn" onclick="regresarPregunta()">Regresar</button>
+  <div id="result"></div>
+  <button id="retry-btn" onclick="reiniciarQuiz()">Volver a intentar</button>
+  <div id="qrcode"></div>
+  <div class="qr-text">Escanea este código QR para acceder al quiz desde tu móvil</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const preguntas = [
+    {
+      pregunta: "¿Qué significa la frase “Museum of the Mind”?",
+      opciones: [
+        "Museo de la Historia",
+        "Museo de cerebro y pensamiento",
+        "Museo de Arte Moderno",
+        "Museo de tecnología"
+      ],
+      respuesta: "Museo de cerebro y pensamiento"
+    },
+    {
+      pregunta: "¿Cuál de estas habilidades está relacionada con la creatividad?",
+      opciones: [
+        "Memorizar fechas",
+        "Seguir instrucciones al pie de la letra",
+        "Leer rápido sin comprensión",
+        "Resolver problemas de manera innovadora",
+        "Copiar información"
+      ],
+      respuesta: "Resolver problemas de manera innovadora"
+    },
+    {
+      pregunta: "En 'Blue Nines and Red Words', ¿qué habilidad especial se describe?",
+      opciones: ["Memoria fotográfica", "Sinestesia", "Hipnosis"],
+      respuesta: "Sinestesia"
+    },
+    {
+      pregunta: "¿Qué personaje es famoso por sus estudios sobre la mente humana?",
+      opciones: [
+        "Isaac Newton",
+        "Albert Einstein",
+        "Carl Jung",
+        "Sigmund Freud",
+        "Leonardo da Vinci"
+      ],
+      respuesta: "Sigmund Freud"
+    },
+    {
+      pregunta: "La sinestesia es:",
+      opciones: [
+        "La capacidad de ver sonidos o escuchar colores",
+        "Detectar patrones en datos",
+        "Recordar fechas fácilmente",
+        "Aprender matemáticas rápido"
+      ],
+      respuesta: "La capacidad de ver sonidos o escuchar colores"
+    },
+    {
+      pregunta: "¿Cuánto es 15÷3+4x2?",
+      opciones: ["10", "13", "14", "16", "18"],
+      respuesta: "16"
+    }
+  ];
+
+  // Índice actual y puntaje
+  let indice = 0;
+  let puntaje = 0;
+
+  // Mostrar la pregunta actual o resultado final
+  function mostrarPregunta() {
+    if (indice >= preguntas.length) {
+      document.getElementById("quiz").innerHTML = "";
+      document.getElementById("result").innerHTML = `✅ Tu puntaje final es: ${puntaje}/${preguntas.length}`;
+      document.getElementById("retry-btn").style.display = "inline-block";
+      document.getElementById("back-btn").style.display = "none"; // ocultar botón regresar al final
+      return;
+    }
+
+    document.getElementById("retry-btn").style.display = "none";
+    // Solo mostrar botón regresar si no está en la primera pregunta
+    document.getElementById("back-btn").style.display = indice > 0 ? "inline-block" : "none";
+
+    const q = preguntas[indice];
+    let html = `<div class="question">${q.pregunta}</div><div class="options">`;
+    q.opciones.forEach(op => {
+      html += `<button onclick="verificarRespuesta(this,'${q.respuesta}')">${op}</button>`;
+    });
+    html += "</div>";
+    document.getElementById("quiz").innerHTML = html;
+    document.getElementById("result").innerHTML = "";
+  }
+
+  // Verifica si la respuesta es correcta y actualiza colores y puntaje
+  function verificarRespuesta(boton, correcta) {
+    if (boton.innerText === correcta) {
+      boton.classList.add("correct");
+      puntaje++;
+    } else {
+      boton.classList.add("wrong");
+    }
+    setTimeout(() => {
+      indice++;
+      mostrarPregunta();
+    }, 1000);
+  }
+
+  // Función para regresar a la pregunta anterior
+  function regresarPregunta() {
+    if (indice > 0) {
+      indice--;
+      mostrarPregunta();
+    }
+  }
+
+  // Reiniciar el quiz
+  function reiniciarQuiz() {
+    indice = 0;
+    puntaje = 0;
+    mostrarPregunta();
+  }
+
+  mostrarPregunta();
+
+  // Código QR para acceder al quiz
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://cristiantorales1.github.io/quiz-museum./",
+    width: 120,
+    height: 120,
+    colorDark: "#222658",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+
+</body>
+</html>

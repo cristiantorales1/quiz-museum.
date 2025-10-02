@@ -1,0 +1,28 @@
+header {
+  width: 100%;
+  background-color: #f1f1f1;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.logo {
+  height: 70px;
+  object-fit: contain;
+}
+.options button {
+  background-color: #4a90e2; /* Azul base */
+  color: white; /* Texto blanco */
+}
+.options button:hover {
+  background-color: #357ab7; /* Azul oscuro hover */
+}
+.correct {
+  background-color: #2a60a3 !important; /* Azul más oscuro correcto */
+  color: white !important;
+}
+.wrong {
+  background-color: #d9534f !important; /* Rojo para incorrecto */
+  color: white !important;
+}
