@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz - Museum of the Mind</title>
+
+  <style>
+    /* Reset y básicos */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f9f9fb;
+      color: #2e2258;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+    }
+
+    /* Header con fondo gris claro y logo imagen centrada */
+    header {
+      width: 100%;
+      background-color: #f1f1f1;
+      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    header img {
+      height: 50px; /* Ajustar tamaño de logo imagen */
+      object-fit: contain;
+      cursor: default;
+      user-select: none;
+    }
+
+    /* Contenedor principal */
+    .quiz-container {
+      background: #fff;
+      max-width: 440px;
+      width: 90%;
+      margin: 30px 0;
+      padding: 25px 20px;
+      border-radius: 22px;
+      box-shadow: 0 8px 22px rgb(46 34 88 / 0.15);
+      text-align: center;
+    }
+
+    /* Título */
+    .quiz-container h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+    }
+
+    /* Pregunta */
+    .question {
+      font-size: 1.25rem;
+      margin: 20px 0 25px;
+      font-weight: 600;
+    }
+
+    /* Opciones botón */
+    .options button {
+      width: 100%;
+      max-width: 320px;
+      background-color: #e9e7f6;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 10px auto;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #2e2258;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      display: block;
+    }
+    .options button:hover {
+      background-color: #c6bdef;
+    }
+    .correct {
+      background-color: #7b4de8 !important;
+      color: white !important;
+    }
+    .wrong {
+      background-color: #e85252 !important;
+      color: white !important;
+    }
+
+    /* Resultado */
+    #result {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2e2258;
+      margin-top: 30px;
+    }
+
+    /* Código QR centrado */
+    #qrcode {
+      margin: 40px auto 10px auto;
+      width: 120px;
+      height: 120px;
+    }
+
+    /* Texto de abajo */
+    .qr-text {
+      font-size: 0.9rem;
+      color: #7a6fa4;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .quiz-container {
+        max-width: 340px;
+        padding: 20px 15px;
+        border-radius: 18px;
+      }
+      header {
+        padding: 15px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header 
+style="width:100%; background:#f1f1f1; padding:15px 20px; display:flex; justify-content:flex-start; align-items:center;">
+  <img src="logo.png" alt="Logo Museum" style="height:70px; object-fit:contain;"/>
+</header>
+
+
+
+
+  <div class="quiz-container">
+    <h1>Quiz - Museum of the Mind</h1>
+    <div id="quiz"></div>
+    <div id="result"></div>
+
+    <div id="qrcode"></div>
+    <div class="qr-text">Escanea este código QR para acceder al quiz desde tu móvil</div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    const preguntas = [
+      { pregunta: "¿Cuál es la capital de Paraguay?", opciones: ["Asunción", "Encarnación", "Ciudad del Este"], respuesta: "Asunción" },
+      { pregunta: "¿Quién escribió 'Flowers for Algernon'?", opciones: ["Daniel Keyes", "George Orwell", "Ray Bradbury"], respuesta: "Daniel Keyes" },
+      { pregunta: "En 'Blue Nines and Red Words', ¿qué habilidad especial se describe?", opciones: ["Memoria fotográfica", "Sinestesia", "Hipnosis"], respuesta: "Sinestesia" },
+      { pregunta: "2 + 2 = ?", opciones: ["3", "4", "5"], respuesta: "4" }
+    ];
+
+    let indice = 0;
+    let puntaje = 0;
+
+    function mostrarPregunta() {
+      if (indice >= preguntas.length) {
+        document.getElementById("quiz").innerHTML = "";
+        document.getElementById("result").innerHTML = `✅ Tu puntaje final es: ${puntaje}/${preguntas.length}`;
+        return;
+      }
+
+      const q = preguntas[indice];
+      let html = `<div class="question">${q.pregunta}</div><div class="options">`;
+      q.opciones.forEach(op => {
+        html += `<button onclick="verificarRespuesta(this,'${q.respuesta}')">${op}</button>`;
+      });
+      html += "</div>";
+      document.getElementById("quiz").innerHTML = html;
+    }
+
+    function verificarRespuesta(boton, correcta) {
+      if (boton.innerText === correcta) {
+        boton.classList.add("correct");
+        puntaje++;
+      } else {
+        boton.classList.add("wrong");
+      }
+      setTimeout(() => {
+        indice++;
+        mostrarPregunta();
+      }, 1000);
+    }
+
+    mostrarPregunta();
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: "https://cristiantorales1.github.io/quiz-museum/",
+      width: 120,
+      height: 120,
+      colorDark: "#2e2258",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+  
+</body>
+</html>
