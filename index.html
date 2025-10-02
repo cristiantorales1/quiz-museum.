@@ -15,7 +15,7 @@
     body {
       font-family: 'Arial', sans-serif;
       background: #f9f9fb;
-      color: #2e2258;
+      color: #141d99;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
@@ -46,7 +46,7 @@
       margin: 30px 0;
       padding: 25px 20px;
       border-radius: 22px;
-      box-shadow: 0 8px 22px rgb(46 34 88 / 0.15);
+      box-shadow: 0 8px 22px rgba(22, 46, 150, 0.15);
       text-align: center;
     }
 
@@ -75,16 +75,16 @@
       margin: 10px auto;
       font-size: 1rem;
       cursor: pointer;
-      color: #2e2258;
+      color: #212aac;
       font-weight: 600;
       transition: background-color 0.3s ease;
       display: block;
     }
     .options button:hover {
-      background-color: #c6bdef;
+      background-color: #5a89c7;
     }
     .correct {
-      background-color: #7b4de8 !important;
+      background-color: #4de888 !important;
       color: white !important;
     }
     .wrong {
@@ -192,7 +192,7 @@ style="width:100%; background:#f1f1f1; padding:15px 20px; display:flex; justify-
     mostrarPregunta();
 
     new QRCode(document.getElementById("qrcode"), {
-      text: "https://cristiantorales1.github.io/quiz-museum/",
+      text: "https://cristiantorales1.github.io/quiz-museum./",
       width: 120,
       height: 120,
       colorDark: "#2e2258",
