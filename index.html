@@ -1,0 +1,252 @@
+<!DOCTYPE html> <!-- Documento HTML5 -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" /> <!-- Codificación de caracteres -->
+<meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- Responsive -->
+<title>Quiz - Museum of the Mind</title>
+
+<style>
+/* ==== ESTILOS GLOBALES ==== */
+* { box-sizing: border-box; margin:0; padding:0; }
+body {
+  font-family: Arial, sans-serif;
+  background:#f9f9fb;
+  color: #222658;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative; /* Para los íconos flotantes */
+}
+
+/* ==== ENCABEZADO ==== */
+header {
+  width: 100%;
+  background: #eceaea;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.logo {
+  height: 70px;
+  object-fit: contain;
+  cursor: default;
+  user-select: none;
+}
+
+/* ==== CONTENEDOR DEL QUIZ ==== */
+.quiz-container {
+  background: #fff;
+  max-width: 440px;
+  width: 90%;
+  margin: 30px 0;
+  padding: 25px 20px;
+  border-radius: 22px;
+  box-shadow: 0 8px 22px rgba(36,37,105,0.15);
+  text-align: center;
+  position: relative; /* Encima de íconos */
+  z-index: 2;
+}
+
+/* ==== TÍTULO FUTURISTA ==== */
+h1 {
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  background: linear-gradient(90deg,#504de8,#22d1ee,#504de8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 8px rgba(80,77,232,0.5);
+}
+
+/* ==== PREGUNTAS Y BOTONES ==== */
+.question {
+  font-size: 1.25rem;
+  margin: 20px 0 25px;
+  font-weight: 600;
+}
+.options button {
+  width: 100%;
+  max-width: 320px;
+  background: #e9e7f6;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 10px auto;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  display: block;
+  color: #07080f;
+  outline:none;
+}
+.options button:hover { background-color: #4969d4; }
+
+.correct { background-color: #2aa34eff; color:white; }
+.wrong { background-color: #d9534f; color:white; }
+
+#result { font-size:1.3rem; font-weight:700; color:#2e2258; margin-top:30px; }
+
+#retry-btn, #back-btn {
+  margin-top: 20px;
+  padding: 12px 30px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+}
+#retry-btn { background-color: #504de8; display:none; }
+#retry-btn:hover { background-color:#3557c7; }
+#back-btn { background-color:#6c757d; display:none; margin-top:10px; }
+#back-btn:hover { background-color:#565e64; }
+
+#qrcode { margin: 40px auto 10px auto; width:120px; height:120px; }
+.qr-text { font-size:0.9rem; color:#0c0a16; margin-bottom:20px; font-weight:600; }
+
+/* ==== ICONOS FLOTANTES ==== */
+.floating-icon {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  animation: bounce 4s infinite ease-in-out;
+  z-index: 1;
+}
+
+/* Animación de rebote */
+@keyframes bounce {
+  0%,100% { transform: translateY(0px) rotate(0deg);}
+  50% { transform: translateY(-25px) rotate(15deg);}
+}
+
+/* ==== RESPONSIVE CELULARES ==== */
+@media (max-width: 480px) {
+  .quiz-container { max-width: 340px; padding: 20px 15px; border-radius:18px; }
+  header { padding: 15px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==== ENCABEZADO ==== -->
+<header>
+  <img src="logo.png" alt="Logo Museum" class="logo" />
+</header>
+
+<!-- ==== CONTENEDOR DEL QUIZ ==== -->
+<div class="quiz-container">
+  <h1>Quiz - Museum of the Mind</h1>
+  <div id="quiz"></div>
+  <button id="back-btn" onclick="regresarPregunta()">Regresar</button>
+  <div id="result"></div>
+  <button id="retry-btn" onclick="reiniciarQuiz()">Volver a intentar</button>
+  <div id="qrcode"></div>
+  <div class="qr-text">Escanea este código QR para acceder al quiz desde tu móvil</div>
+</div>
+
+<!-- Librería QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+/* ==== PREGUNTAS ==== */
+const preguntas = [
+  { pregunta:"¿Qué significa la frase “Museum of the Mind”?", opciones:["Museo de la Historia","Museo de cerebro y pensamiento","Museo de Arte Moderno","Museo de tecnología"], respuesta:"Museo de cerebro y pensamiento" },
+  { pregunta:"¿Cuál de estas habilidades está relacionada con la creatividad?", opciones:["Memorizar fechas","Seguir instrucciones","Leer rápido","Resolver problemas de manera innovadora","Copiar información"], respuesta:"Resolver problemas de manera innovadora" },
+  { pregunta:"En 'Blue Nines and Red Words', ¿qué habilidad especial se describe?", opciones:["Memoria fotográfica","Sinestesia","Hipnosis"], respuesta:"Sinestesia" },
+  { pregunta:"¿Qué personaje es famoso por sus estudios sobre la mente humana?", opciones:["Isaac Newton","Albert Einstein","Carl Jung","Sigmund Freud","Leonardo da Vinci"], respuesta:"Sigmund Freud" },
+  { pregunta:"La sinestesia es:", opciones:["La capacidad de ver sonidos o escuchar colores","Detectar patrones","Recordar fechas","Aprender matemáticas rápido"], respuesta:"La capacidad de ver sonidos o escuchar colores" },
+  { pregunta:"¿Cuánto es 15 ÷ 3 + 4 x 2?", opciones:["10","13","14","16","18"], respuesta:"16" }
+];
+
+/* ==== VARIABLES ==== */
+let indice=0, puntaje=0;
+
+/* ==== FUNCIONES ==== */
+function mostrarPregunta() {
+  if(indice>=preguntas.length){
+    document.getElementById("quiz").innerHTML="";
+    document.getElementById("result").innerHTML=`✅ Tu puntaje final es: ${puntaje}/${preguntas.length}`;
+    document.getElementById("retry-btn").style.display="inline-block";
+    document.getElementById("back-btn").style.display="none";
+    return;
+  }
+  document.getElementById("retry-btn").style.display="none";
+  document.getElementById("back-btn").style.display=(indice>0)?"inline-block":"none";
+
+  const q=preguntas[indice];
+  let html=`<div class="question">${q.pregunta}</div><div class="options">`;
+  q.opciones.forEach(op=>{
+    html+=`<button onclick="verificarRespuesta(this,'${q.respuesta}')">${op}</button>`;
+  });
+  html+="</div>";
+  document.getElementById("quiz").innerHTML=html;
+  document.getElementById("result").innerHTML="";
+
+  // Quitar estilos previos
+  const botones=document.querySelectorAll('.options button');
+  botones.forEach(b=>{
+    b.blur();
+    b.style.backgroundColor="#e9e7f6";
+    b.style.color="#07080f";
+  });
+}
+
+function verificarRespuesta(boton,correcta){
+  boton.blur();
+  const botones=document.querySelectorAll('.options button');
+  botones.forEach(b=>{ b.style.backgroundColor="#e9e7f6"; b.style.color="#07080f"; });
+
+  if(boton.innerText===correcta){
+    boton.style.backgroundColor="#2aa34eff";
+    boton.style.color="white";
+    puntaje++;
+  }else{
+    boton.style.backgroundColor="#d9534f";
+    boton.style.color="white";
+  }
+
+  setTimeout(()=>{ indice++; mostrarPregunta(); },1000);
+}
+
+function regresarPregunta(){ if(indice>0){ indice--; mostrarPregunta(); } }
+function reiniciarQuiz(){ indice=0; puntaje=0; mostrarPregunta(); }
+
+mostrarPregunta();
+
+/* ==== GENERAR QR ==== */
+new QRCode(document.getElementById("qrcode"), {
+  text:"https://cristiantorales1.github.io/quiz-museum/",
+  width:120, height:120,
+  colorDark:"#222658", colorLight:"#ffffff",
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+/* ==== ICONOS FLOTANTES EDUCATIVOS ==== */
+const iconUrls=[
+  "https://cdn-icons-png.flaticon.com/512/7749/7749358.png", // libro con lápiz
+  "https://cdn-icons-png.flaticon.com/512/6041/6041529.png", // cerebro con libro
+  "https://cdn-icons-png.flaticon.com/512/4752/4752413.png", // graduación y engranaje
+  "https://cdn-icons-png.flaticon.com/512/4927/4927601.png", // cerebro y libro
+  "https://cdn-icons-png.flaticon.com/512/2490/2490411.png",  // cerebro y gráfico
+  "https://cdn-icons-png.flaticon.com/512/1995/1995574.png" // lápiz
+
+
+];
+
+
+for(let i=0;i<10;i++){
+  const icon=document.createElement("img");
+  icon.src=iconUrls[Math.floor(Math.random()*iconUrls.length)];
+  icon.className="floating-icon";
+  icon.style.left=Math.random()*90+"vw";
+  icon.style.top=Math.random()*90+"vh";
+  icon.style.animationDuration=(4+Math.random()*4)+"s";
+  document.body.appendChild(icon);
+}
+</script>
+
+</body>
+</html>
