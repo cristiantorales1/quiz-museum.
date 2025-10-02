@@ -25,7 +25,8 @@
     }
 
     .logo {
-      max-width: 150px;
+      width: 250px; /* Logo más grande */
+      height: auto;
       margin: 0 auto 20px auto;
       display: block;
     }
@@ -75,7 +76,7 @@
 
   <div class="quiz-container">
     <!-- Logo -->
-    <img src="logo SEK.png" alt="Logo" class="logo">
+    <img src="logo.png" alt="Logo" class="logo">
     
     <h1>Quiz - Museum of the Mind</h1>
     <div id="quiz"></div>
@@ -128,17 +129,15 @@
 
     mostrarPregunta();
 
-    // Generar QR más pequeño centrado
-   // QR apuntando a tu sitio GitHub Pages
-new QRCode(document.getElementById("qrcode"), {
-  text: "https://cristiantorales1.github.io/quiz-museum/",
-  width: 120,
-  height: 120,
-  colorDark : "#000000",
-  colorLight : "#ffffff",
-  correctLevel : QRCode.CorrectLevel.H
-});
-
+    // Generar QR centrado con tu GitHub Pages
+    new QRCode(document.getElementById("qrcode"), {
+      text: "https://cristiantorales1.github.io/quiz-museum/",
+      width: 120,
+      height: 120,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
   </script>
 
 </body>
