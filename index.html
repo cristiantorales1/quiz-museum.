@@ -8,48 +8,75 @@
       font-family: Arial, sans-serif;
       background: #f0f0f0;
       padding: 20px;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
+
     .quiz-container {
       background: white;
       max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      text-align: center;
     }
-    h1 { color: #333; }
+
+    .logo {
+      max-width: 150px;
+      margin: 0 auto 20px auto;
+      display: block;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 25px;
+    }
+
     .question {
       font-size: 20px;
-      margin: 15px 0;
+      margin: 20px 0;
     }
+
     .options button {
       display: block;
-      width: 100%;
-      padding: 10px;
-      margin: 6px 0;
+      width: 90%;
+      max-width: 300px;
+      padding: 12px;
+      margin: 10px auto;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: #ddd;
       cursor: pointer;
+      font-size: 16px;
       transition: 0.3s;
     }
+
     .options button:hover { background: #bbb; }
+
     .correct { background: #4CAF50 !important; color: white; }
     .wrong { background: #E53935 !important; color: white; }
+
     #result {
       font-size: 22px;
-      margin-top: 20px;
+      margin-top: 25px;
       font-weight: bold;
     }
+
     #qrcode {
       margin-top: 20px;
+      display: inline-block;
     }
   </style>
 </head>
 <body>
 
   <div class="quiz-container">
+    <!-- Logo -->
+    <img src="logo SEK.png" alt="Logo" class="logo">
+    
     <h1>Quiz - Museum of the Mind</h1>
     <div id="quiz"></div>
     <div id="result"></div>
@@ -61,26 +88,10 @@
 
   <script>
     const preguntas = [
-      {
-        pregunta: "¿Cuál es la capital de Paraguay?",
-        opciones: ["Asunción", "Encarnación", "Ciudad del Este"],
-        respuesta: "Asunción"
-      },
-      {
-        pregunta: "¿Quién escribió 'Flowers for Algernon'?",
-        opciones: ["Daniel Keyes", "George Orwell", "Ray Bradbury"],
-        respuesta: "Daniel Keyes"
-      },
-      {
-        pregunta: "En 'Blue Nines and Red Words', ¿qué habilidad especial se describe?",
-        opciones: ["Memoria fotográfica", "Sinestesia", "Hipnosis"],
-        respuesta: "Sinestesia"
-      },
-      {
-        pregunta: "2 + 2 = ?",
-        opciones: ["3", "4", "5"],
-        respuesta: "4"
-      }
+      { pregunta: "¿Cuál es la capital de Paraguay?", opciones: ["Asunción", "Encarnación", "Ciudad del Este"], respuesta: "Asunción" },
+      { pregunta: "¿Quién escribió 'Flowers for Algernon'?", opciones: ["Daniel Keyes", "George Orwell", "Ray Bradbury"], respuesta: "Daniel Keyes" },
+      { pregunta: "En 'Blue Nines and Red Words', ¿qué habilidad especial se describe?", opciones: ["Memoria fotográfica", "Sinestesia", "Hipnosis"], respuesta: "Sinestesia" },
+      { pregunta: "2 + 2 = ?", opciones: ["3", "4", "5"], respuesta: "4" }
     ];
 
     let indice = 0;
@@ -95,11 +106,9 @@
 
       let q = preguntas[indice];
       let html = `<div class="question">${q.pregunta}</div><div class="options">`;
-
       q.opciones.forEach(op => {
         html += `<button onclick="verificarRespuesta(this,'${q.respuesta}')">${op}</button>`;
       });
-
       html += "</div>";
       document.getElementById("quiz").innerHTML = html;
     }
@@ -117,11 +126,19 @@
       }, 1000);
     }
 
-    // Inicia el quiz
     mostrarPregunta();
 
-    // Generar QR con la URL del quiz (puedes cambiar el link por uno en internet)
-    new QRCode(document.getElementById("qrcode"), window.location.href);
+    // Generar QR más pequeño centrado
+   // QR apuntando a tu sitio GitHub Pages
+new QRCode(document.getElementById("qrcode"), {
+  text: "https://cristiantorales1.github.io/quiz-museum/",
+  width: 120,
+  height: 120,
+  colorDark : "#000000",
+  colorLight : "#ffffff",
+  correctLevel : QRCode.CorrectLevel.H
+});
+
   </script>
 
 </body>
