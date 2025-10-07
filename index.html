@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es"> <!-- Indica que el contenido de la página está en español -->
+<head>
+  <meta charset="UTF-8"> <!-- Permite usar caracteres especiales como ñ y tildes -->
+  <title>Quiz - Museum of the Mind</title> <!-- Título que aparece en la pestaña del navegador -->
+
+  <style> /* style: Aquí escribimos CSS (colores, tamaños, estilos)*/
+    /* ===== ESTILO DEL BODY ===== */
+    body { /*Body: Aplica estilos a todo el cuerpo de la página (fuente, colores, flexbox)*/
+      font-family: Arial, sans-serif; /* Fuente de letra */
+      background: #f9f9fb; /* Color de fondo de la página */
+      color: #222658; /* Color del texto principal */
+      display: flex; /* Usamos flexbox para organizar elementos verticalmente */
+      flex-direction: column; /* Dirección de los elementos: de arriba hacia abajo */
+      align-items: center; /* Centra los elementos horizontalmente */
+      margin: 0; /* Elimina el margen predeterminado del navegador */
+    }
+
+    /* ===== HEADER CON LOGO ===== */
+    header { /*header: Barra superior de la página donde va el logo*/
+      width: 100%; /* Ocupa todo el ancho de la pantalla */
+      background: #eceaea; /* Color gris claro de la barra superior */
+      padding: 10px 20px; /* Espacio interno arriba/abajo y a los lados */
+      display: flex; /* Flexbox para alinear elementos horizontalmente */
+      align-items: center; /* Centra verticalmente los elementos dentro del header */
+    }
+    .logo { /*logo.: Aplica estilo al logo (tamaño y posición)*/
+      height: 100px; /* Altura del logo */
+      object-fit: contain; /* Mantiene la proporción del logo */
+      margin-right: auto; /* Empuja el logo hacia la izquierda */
+    }
+
+    /* ===== CONTENEDOR DEL QUIZ ===== */
+    .quiz-container { /*quiz-container: Contenedor blanco donde está el quiz (preguntas y botones)*/
+      background: #fff; /* Fondo blanco */
+      width: 90%; /* Ancho relativo al 90% de la pantalla */
+      max-width: 400px; /* Máximo ancho en píxeles */
+      margin: 30px; /* Separación externa alrededor del contenedor */
+      padding: 20px; /* Separación interna dentro del contenedor */
+      border-radius: 15px; /* Bordes redondeados */
+      text-align: center; /* Centra el contenido dentro del contenedor */
+    }
+
+    /* ===== ESTILO DE PREGUNTAS ===== */
+    .question { /*question: Estilo para el texto de la pregunta*/
+      font-size: 1.2rem; /* Tamaño de la letra de la pregunta */
+      margin: 20px 0; /* Espacio arriba y abajo de la pregunta */
+    }
+
+    /* ===== ESTILO DE BOTONES ===== */
+    button { /* button: Estilo para los botones de opciones*/
+      width: 100%; /* Botones ocupan todo el ancho del contenedor */
+      padding: 10px; /* Espacio interno dentro del botón */
+      margin: 5px 0; /* Espacio entre los botones */
+      cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    }
+    .correct { /*correct: Cambia el color a verde cuando la respuesta es correcta*/
+      background-color: green; /* Color verde si la respuesta es correcta */
+      color: white; 
+    }
+    .wrong { /*wrong: Cambia el color a rojo cuando la respuesta es incorrecta*/
+      background-color: red; /* Color rojo si la respuesta es incorrecta */
+      color: white; 
+    }
+
+    /* ===== ESTILO DEL QR ===== */
+    #qrcode { /*Contenedor donde se genera el código QR*/
+      margin: 20px auto; /* Centra el QR y separa del contenido */
+      width: 120px; /* Ancho del QR */
+      height: 120px; /* Alto del QR */
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== HEADER CON LOGO ===== -->
+<header> <!--header: Barra superior de la página donde va el logo-->
+  <img src="logo.png" alt="Logo Museum" class="logo" /> 
+  <!-- 
+    <img>: etiqueta para mostrar imágenes
+    src: indica la ruta de la imagen (logo.png)
+    alt: texto alternativo si no se carga la imagen
+    class="logo": clase CSS para aplicar estilos específicos
+  -->
+</header> <!--header: Barra superior de la página donde va el logo-->
+
+<!-- ===== CONTENEDOR DEL QUIZ ===== -->
+<div class="quiz-container"> <!--Contenedor del quiz completo-->
+  <h1>Quiz - Museum of the Mind</h1> <!-- Título del quiz -->
+  <div id="quiz"></div> <!-- 
+      div con id="quiz": contenedor donde se mostrarán las preguntas y los botones
+      "id" es una variable que identifica un elemento único en la página -->
+  <div id="result"></div> <!-- 
+      div con id="result": aquí se mostrará el puntaje final -->
+  <button id="retry-btn" onclick="reiniciarQuiz()" style="display:none;">
+      Volver a intentar
+  </button> <!-- Botón para reiniciar el quiz onclick="reiniciarQuiz()": llama a la función reiniciarQuiz() cuando se hace clic
+      style="display:none": el botón está oculto al inicio
+  -->
+  <div id="qrcode"></div> <!-- 
+      Contenedor donde se genera el código QR
+  -->
+  <div>Escanea este código QR para acceder al quiz desde tu móvil</div>
+</div>
+
+<!-- ===== LIBRERÍA PARA GENERAR QR ===== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- 
+    <script src="">: carga un archivo JavaScript externo
+    Esta librería nos permite generar códigos QR automáticamente
+-->
+
+<script> //Para poner o cargar código JavaScript que hace la página dinámica
+  // ===== VARIABLES DEL QUIZ =====
+  const preguntas = [ //Guarda un valor que no se puede reemplazar; útil para datos que no deben cambiar (como tus preguntas del quiz)
+    { 
+      pregunta:"¿Qué significa “Museum of the Mind”?", 
+      opciones:["Museo de Historia","Museo de cerebro y pensamiento","Museo de Arte Moderno"], 
+      respuesta:"Museo de cerebro y pensamiento" 
+    },
+    { 
+      pregunta:"Habilidad relacionada con creatividad", 
+      opciones:["Memorizar fechas","Resolver problemas de manera innovadora"], 
+      respuesta:"Resolver problemas de manera innovadora" 
+    },
+    { 
+      pregunta:"La sinestesia es:", 
+      opciones:["Ver sonidos o escuchar colores","Recordar fechas"], 
+      respuesta:"Ver sonidos o escuchar colores" 
+    },
+    { 
+      pregunta:"¿Quién estudió la mente humana?", 
+      opciones:["Albert Einstein","Sigmund Freud"], 
+      respuesta:"Sigmund Freud" 
+    },
+    { 
+      pregunta:"15 ÷ 3 + 4 x 2 =", 
+      opciones:["10","16"], 
+      respuesta:"16" 
+    }
+  ]; 
+  // "preguntas" es un array (lista) que guarda objetos. Cada objeto tiene:
+  // - pregunta: texto de la pregunta
+  // - opciones: lista de opciones de respuesta
+  // - respuesta: la opción correcta
+
+  let indice = 0; // Variable que indica la posición de la pregunta actual
+  let puntaje = 0; // Variable que guarda los puntos obtenidos por el usuario
+
+  // ===== FUNCION PARA MOSTRAR LA PREGUNTA ACTUAL =====
+  function mostrarPregunta() {
+    if(indice >= preguntas.length){
+      // Si ya no quedan preguntas, muestra el puntaje final
+      document.getElementById("quiz").innerHTML = ""; // Vacía el contenedor de preguntas
+      document.getElementById("result").innerText = `✅ Puntaje final: ${puntaje}/${preguntas.length}`; // Muestra puntaje
+      document.getElementById("retry-btn").style.display = "block"; // Muestra botón de reinicio
+      return;
+    }
+
+    const q = preguntas[indice]; // Toma la pregunta actual
+    let html = `<div class="question">${q.pregunta}</div>`; // Crea el HTML de la pregunta
+    q.opciones.forEach(op => {
+      // Por cada opción, crea un botón que llama a la función verificarRespuesta al hacer clic
+      html += `<button onclick="verificarRespuesta(this,'${q.respuesta}')">${op}</button>`;
+    });
+    document.getElementById("quiz").innerHTML = html; // Inserta la pregunta y botones en la página
+    document.getElementById("result").innerText = ""; // Limpia el puntaje mientras se responde
+  }
+
+  // ===== FUNCION PARA VERIFICAR SI LA RESPUESTA ES CORRECTA =====
+  function verificarRespuesta(boton, correcta) {
+    if(boton.innerText === correcta){
+      boton.classList.add("correct"); // Pinta el botón de verde si es correcta
+      puntaje++; // Suma 1 punto
+    } else {
+      boton.classList.add("wrong"); // Pinta el botón de rojo si es incorrecta
+    }
+
+    // Espera 0.8 segundos y luego muestra la siguiente pregunta
+    setTimeout(() => { 
+      indice++; // Avanza a la siguiente pregunta
+      mostrarPregunta(); // Llama a la función para mostrar la siguiente pregunta
+    }, 800);
+  }
+
+  // ===== FUNCION PARA REINICIAR EL QUIZ =====
+  function reiniciarQuiz() {
+    indice = 0; // Vuelve a la primera pregunta
+    puntaje = 0; // Reinicia el puntaje
+    mostrarPregunta(); // Muestra la primera pregunta nuevamente
+    document.getElementById("retry-btn").style.display = "none"; // Oculta el botón de reinicio
+  }
+
+  // ===== INICIA EL QUIZ =====
+  mostrarPregunta(); // Llama a la función al cargar la página
+
+  // ===== GENERAR CÓDIGO QR =====
+  new QRCode(document.getElementById("qrcode"), {
+    text:"https://cristiantorales1.github.io/quiz-museum./", // URL del quiz
+    width:120, // Ancho del QR
+    height:120, // Alto del QR
+    colorDark:"#222658", // Color oscuro del QR
+    colorLight:"#ffffff", // Color claro del QR
+    correctLevel: QRCode.CorrectLevel.H // Nivel de corrección de errores
+  });
+</script>
+
+</body>
+</html>
